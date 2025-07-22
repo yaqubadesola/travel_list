@@ -7,6 +7,13 @@ function App() {
     setItems((items) => [...items, newItem]);
   };
 
+  const onClear = () => {
+    const confirm = window.confirm(
+      "Are you sure you want to delete all list ?"
+    );
+    if (confirm) setItems([]);
+  };
+
   const onPacked = (id) => {
     console.log("I got here = ", id);
 
@@ -32,8 +39,13 @@ function App() {
     <div className="app">
       <Logo />
       <Form onAddItem={addItem} />
-      <PackingList items={items} onPacked={onPacked} onDelete={deleteItem} />
-      <Stats />
+      <PackingList
+        items={items}
+        onPacked={onPacked}
+        onDelete={deleteItem}
+        onClear={onClear}
+      />
+      <Stats items={items} />
     </div>
   );
 }
@@ -82,11 +94,21 @@ export function Form({ onAddItem }) {
 }
 
 //Packing List
-export function PackingList({ items, onPacked, onDelete }) {
+
+export function PackingList({ items, onPacked, onDelete, onClear }) {
+  const [sortVal, setSortVal] = useState("input");
+
+  let sortedItems;
+  if (sortVal === "input") sortedItems = items;
+  if (sortVal === "desc")
+    sortedItems = items.slice().sort((a, b) => a.desc.localeCompare(b.desc));
+  if (sortVal === "packed")
+    sortedItems = items.slice().sort((a, b) => a.packed - b.packed);
+
   return (
     <div className="list">
       <ul>
-        {items.map((item) => (
+        {sortedItems.map((item) => (
           <li key={item.timestamp}>
             <input
               type="checkbox"
@@ -102,15 +124,36 @@ export function PackingList({ items, onPacked, onDelete }) {
           </li>
         ))}
       </ul>
+
+      <div className="actions">
+        <select
+          value={sortVal}
+          name="sortItem"
+          onChange={(e) => setSortVal(e.target.value)}
+        >
+          <option value="input">Sort by input</option>
+          <option value="desc">Sort by Description</option>
+          <option value="packed">Sort by packed Items</option>
+        </select>
+
+        <button onClick={onClear}>Clear list</button>
+      </div>
     </div>
   );
 }
 
 //Stats
-export function Stats() {
+export function Stats({ items }) {
+  const totalItems = items.length;
+  const totalPackedItems = items.filter((item) => item.packed).length;
+  const percentagePacked = Number(
+    Math.round((totalPackedItems / totalItems) * 100),
+    2
+  );
   return (
     <div className="stats">
-      🙉You have X items o the list and you have already packed X items
+      🙉You have {totalItems} items o the list and you have already packed{" "}
+      {totalPackedItems} items ({percentagePacked})%
     </div>
   );
 }
