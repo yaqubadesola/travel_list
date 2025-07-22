@@ -6,11 +6,33 @@ function App() {
   const addItem = (newItem) => {
     setItems((items) => [...items, newItem]);
   };
+
+  const onPacked = (id) => {
+    console.log("I got here = ", id);
+
+    const updatedItems = items.map((item) => {
+      if (item.timestamp === id) {
+        item.packed = !item.packed;
+        return item;
+      } else {
+        return item;
+      }
+    });
+    console.log("filtered = ", updatedItems);
+
+    setItems(updatedItems);
+  };
+
+  const deleteItem = (id) => {
+    const otherItems = items.filter((item) => item.timestamp !== id);
+    setItems(otherItems);
+  };
+
   return (
     <div className="app">
       <Logo />
       <Form onAddItem={addItem} />
-      <PackingList items={items} />
+      <PackingList items={items} onPacked={onPacked} onDelete={deleteItem} />
       <Stats />
     </div>
   );
@@ -27,7 +49,6 @@ export function Logo() {
 export function Form({ onAddItem }) {
   const [qty, setQty] = useState(1);
   const [desc, setDesc] = useState("");
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (desc === "") {
@@ -63,15 +84,23 @@ export function Form({ onAddItem }) {
 }
 
 //Packing List
-export function PackingList({ items }) {
+export function PackingList({ items, onPacked, onDelete }) {
   return (
     <div className="list">
       <ul>
         {items.map((item) => (
           <li key={item.timestamp}>
-            <span>{item.qty}</span>
-            <span>{item.desc}</span>
-            <span>❌</span>
+            <input
+              type="checkbox"
+              name="packed"
+              checked={item.packed}
+              onChange={() => onPacked(item.timestamp)}
+            />
+            <div style={item.packed ? { textDecoration: "line-through" } : {}}>
+              <span>{item.qty} </span>
+              <span>{item.desc}</span>
+            </div>
+            <button onClick={() => onDelete(item.timestamp)}>❌</button>
           </li>
         ))}
       </ul>
