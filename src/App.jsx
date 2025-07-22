@@ -60,26 +60,24 @@ export function Form({ onAddItem }) {
   };
 
   return (
-    <div className="add-form">
+    <form className="add-form" onSubmit={(e) => handleSubmit(e)}>
       <h3>What do you need for your 😍 trip</h3>
-      <form action="" onSubmit={(e) => handleSubmit(e)}>
-        <select value={qty} onChange={(e) => setQty(Number(e.target.value))}>
-          {Array.from({ length: 20 }, (_, i) => i + 1).map((item) => (
-            <option value={item} key={item}>
-              {item}
-            </option>
-          ))}
-        </select>
-        <input
-          type="text"
-          placeholder="...Add item"
-          value={desc}
-          onChange={(e) => setDesc(e.target.value)}
-        />
+      <select value={qty} onChange={(e) => setQty(Number(e.target.value))}>
+        {Array.from({ length: 20 }, (_, i) => i + 1).map((item) => (
+          <option value={item} key={item}>
+            {item}
+          </option>
+        ))}
+      </select>
+      <input
+        type="text"
+        placeholder="...Add item"
+        value={desc}
+        onChange={(e) => setDesc(e.target.value)}
+      />
 
-        <button>Add</button>
-      </form>
-    </div>
+      <button>Add</button>
+    </form>
   );
 }
 
@@ -110,5 +108,9 @@ export function PackingList({ items, onPacked, onDelete }) {
 
 //Stats
 export function Stats() {
-  return <div className="stats">Stats</div>;
+  return (
+    <div className="stats">
+      🙉You have X items o the list and you have already packed X items
+    </div>
+  );
 }
